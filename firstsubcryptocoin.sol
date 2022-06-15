@@ -1,31 +1,31 @@
-pragma solidity ^0.5.4;
+pragma solidity ^0.8.4;
 
 contract coin{
-address public minter;
-mapping(address=>uint) public balances;
 
-event sent(address from,address to,uint amount);
+    address public minter;
+    mapping(address => uint) public balances;
 
-constuctor(){
-minter=msg.sender;
-}
+    event sent(address from, address to, uint amount);
 
-function mint(address reciver,uint amount)public{
-require(minter==msg.sender);
-balances[reciver]+=amount;
-}
+    constructor() {
+        minter = msg.sender;
+    }
 
-error insufficentbalance(uint requested,uint avilable);
+    function mint(address reciver, uint amount) public {
+        require(msg.sender == minter);
+        balances[reciver] += amount;
+    }
+    error InsufficientBalance(uint requested, uint available);
 
-function send(address reciver, uint amount)public{
-if(amount>balances[msg.sender])
-revert insufficentbalance({
-requested:amount,
-avilable :balances[msg.sender]
-});
-balances[msg.sender]-=amount;
-balances[reciver]+=amount;
-emit sent(msg.sender,reciver,amount);
-}
+    function send(address reciver, uint amount) public {
+        if (amount > balances[msg.sender])
+            revert InsufficientBalance ({
+                requested: amount,
+                available: balances[msg.sender]
+            });
 
+        balances[msg.sender] -= amount;
+        balances[reciver] += amount;
+        emit sent(msg.sender, reciver, amount);
+    }
 }
